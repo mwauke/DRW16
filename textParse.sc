@@ -57,8 +57,7 @@ def formatEntry(e: Elem): String = {
 def parse (s: String) = {
   val baseUrl = "https://services.perseids.org/bsp/morphologyservice/analysis/word?lang=grc&engine=morpheusgrc&word="
   val request = baseUrl + s
-  //try {
-  println("Submitting " + request)
+  
 
   val morphReply = scala.io.Source.fromURL(request).mkString
 
