@@ -6,11 +6,12 @@ def script(s: String) = {
 
   val scholiaEx = scala.io.Source.fromFile(s).getLines.toVector
 
+
   val filteredArray = scholiaEx.map(s => s.split("\t")).filter(_.size.toString.contains("2"))
 
   val justSchol = filteredArray.map( a => a(1))
 
-  val wordVector = justSchol.map(_.split("[ ,]+").filterNot(_.isEmpty))
+  val wordVector = justSchol.map(_.split("[ ,\\]\\.·⁑:]+").filterNot(_.isEmpty))
 
   val allWords = wordVector.flatten
 
@@ -18,6 +19,7 @@ def script(s: String) = {
 
   val uniqueWords = filteredWords.groupBy( w => w).map(_._1)
 
+  
   val parsedResults = uniqueWords.map( w => {
     val analysis = parse(w)
     (w,analysis)
@@ -57,7 +59,7 @@ def formatEntry(e: Elem): String = {
 def parse (s: String) = {
   val baseUrl = "https://services.perseids.org/bsp/morphologyservice/analysis/word?lang=grc&engine=morpheusgrc&word="
   val request = baseUrl + s
-  
+
 
   val morphReply = scala.io.Source.fromURL(request).mkString
 
