@@ -3,7 +3,7 @@ import scala.io.Source
 import java.io._
 
 @main
-def script(s: String) = {
+def script(s: String, initial10 : Int) = {
 
   val scholiaEx = scala.io.Source.fromFile(s).getLines.toVector
 
@@ -27,15 +27,16 @@ def script(s: String) = {
 
 
   println("For total words " + sortedWords.size)
-  for ( i <-  0 to total10s - 1) {
+  for ( i <-  initial10 to total10s - 1) {
 
     println("Look at decade " + i)
     val tenWords = sortedWords.drop(i * 10).take(10)
     val fName = "decade" + i + ".tsv"
 
     val parsedResults = tenWords.map( w => {
+      println ("\tTry word " + w)
       val analysis = parse(w)
-      w + "\t" + analysis.mkString(" ")
+      w + "\t" + analysis
     })
 
 
@@ -81,24 +82,38 @@ def formatEntry(e: Elem): String = {
 
 }
 
+def  getMorphReply(request: String) : String = {
+  var reply : String = ""
+  try {
+    reply = scala.io.Source.fromURL(request).mkString
+  } catch {
+    case _ => reply = "Error from parsing service."
+  }
+  reply
+}
 
-def parse (s: String) = {
+
+def parse (s: String): String = {
   val baseUrl = "https://services.perseids.org/bsp/morphologyservice/analysis/word?lang=grc&engine=morpheusgrc&word="
   val request = baseUrl + s
 
 
-  val morphReply = scala.io.Source.fromURL(request).mkString
+  //val morphReply = scala.io.Source.fromURL(request).mkString
+  val morphReply = getMorphReply(request)
 
-  val root = XML.loadString(morphReply)
-  val entries = root \\ "entry"
+  if (morphReply.isEmpty) {
+    ""
 
-  val lexent = entries.map( e => e match {
-    case el: Elem => formatEntry(el)
-    case _ => ""
+  } else {
+    val root = XML.loadString(morphReply)
+    val entries = root \\ "entry"
 
-  })
+    val lexent = entries.map( e => e match {
+      case el: Elem => formatEntry(el)
+      case _ => ""
 
-
-lexent
+    })
+    lexent.mkString(" ")
+  }
 
 }
