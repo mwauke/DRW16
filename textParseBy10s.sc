@@ -12,7 +12,7 @@ def script(s: String, initial10 : Int) = {
 
   val justSchol = filteredArray.map( a => a(1))
 
-  val wordVector = justSchol.map(_.split("[\\\\>   ,\\[\\]\\.·⁑:\"·]+").filterNot(_.isEmpty))
+  val wordVector = justSchol.map(_.split("[\\{\\}\\\\>   ,\\[\\]\\.·⁑:\"·]+").filterNot(_.isEmpty))
 
   val allWords = wordVector.flatten
 
